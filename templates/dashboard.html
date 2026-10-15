@@ -188,7 +188,10 @@
             const data = await response.json();
             const metrics = data.metrics;
 
-            document.getElementById("health").textContent = "● ONLINE";
+            const healthBadge = document.getElementById("health");
+            healthBadge.textContent = "● ONLINE";
+            healthBadge.style.background = "#064e3b";
+            healthBadge.style.color = "#6ee7b7";
 
             document.getElementById("uptime").textContent = formatUptime(data.uptime_seconds);
 

@@ -51,14 +51,20 @@ def after_request(response):
 
     log_entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "level": "INFO" if response.status_code < 400 else "ERROR",
+        "level": ("ERROR" if response.status_code >= 500 else
+                  "WARNING" if response.status_code >= 400 else "INFO"),
         "method": request.method,
         "path": request.path,
         "status_code": response.status_code,
         "duration_ms": duration_ms    
     }
 
-    logger.info(json.dumps(log_entry))
+    if response.status_code >= 500:
+        logger.error(json.dumps(log_entry))
+    elif response.status_code >= 400:
+        logger.warning(json.dumps(log_entry))
+    else:
+        logger.info(json.dumps(log_entry))
 
     return response
 
@@ -66,9 +72,9 @@ def after_request(response):
 @app.route("/")
 def home():
     return jsonify({
-        "message": "Hello form Solace Platform Project!",
+        "message": "Hello from Solace Platform Project!",
         "status": "running",
-        "endpoints": ["/", "/health", "/status"]
+        "endpoints": ["/", "/health", "/status", "/dashboard"]
     })
 
 
